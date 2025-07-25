@@ -7,7 +7,7 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- Theme Color para la barra de estado del navegador -->
+    <!-- Theme Color -->
     <meta name="theme-color" content="#ffffff">
 
     <title>Gestor de Reservas - Cabañas Manuara</title>
@@ -24,18 +24,9 @@
 
     <style>
         @media print {
-          body * {
-            visibility: hidden;
-          }
-          #print-content, #print-content * {
-            visibility: visible;
-          }
-          #print-content {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-          }
+          body * { visibility: hidden; }
+          #print-content, #print-content * { visibility: visible; }
+          #print-content { position: absolute; left: 0; top: 0; width: 100%; }
         }
     </style>
 </head>
@@ -45,14 +36,37 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Componente para un ícono SVG simple
+        // --- COMPONENTES ---
+
         const Icon = ({ path, className = "w-6 h-6" }) => (
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
             <path strokeLinecap="round" strokeLinejoin="round" d={path} />
           </svg>
         );
 
-        // Componente para el formulario de un pasajero
+        function ConfirmModal({ isOpen, onClose, onConfirm, title, children }) {
+            if (!isOpen) return null;
+
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+                        <div className="p-6">
+                            <h3 className="text-xl font-bold text-gray-800">{title}</h3>
+                            <p className="mt-2 text-gray-600">{children}</p>
+                        </div>
+                        <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3 rounded-b-lg">
+                            <button onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition-colors">
+                                Cancelar
+                            </button>
+                            <button onClick={onConfirm} className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
+                                Confirmar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
         function PassengerForm({ addPassenger }) {
           const [name, setName] = useState('');
           const [rut, setRut] = useState('');
@@ -72,30 +86,14 @@
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-600 mb-1">Nombre Completo</label>
-                  <input
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Ej: Juan Pérez"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
+                  <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej: Juan Pérez" className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
                 </div>
                 <div>
                   <label htmlFor="rut" className="block text-sm font-medium text-gray-600 mb-1">RUT</label>
-                  <input
-                    id="rut"
-                    type="text"
-                    value={rut}
-                    onChange={(e) => setRut(e.target.value)}
-                    placeholder="Ej: 12.345.678-9"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
+                  <input id="rut" type="text" value={rut} onChange={(e) => setRut(e.target.value)} placeholder="Ej: 12.345.678-9" className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
                 </div>
               </div>
-              <button type="submit" className="mt-4 w-full flex justify-center items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+              <button type="submit" className="mt-4 w-full flex justify-center items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700">
                 <Icon path="M12 4.5v15m7.5-7.5h-15" className="w-5 h-5" />
                 Agregar
               </button>
@@ -103,7 +101,6 @@
           );
         }
 
-        // Componente para la lista de pasajeros
         function PassengerList({ passengers, removePassenger }) {
           if (passengers.length === 0) {
             return (
@@ -123,7 +120,7 @@
                         <p className="font-medium text-gray-800">{passenger.name}</p>
                         <p className="text-sm text-gray-500">{passenger.rut}</p>
                     </div>
-                    <button onClick={() => removePassenger(passenger.id)} className="p-2 text-red-500 hover:bg-red-100 rounded-full transition-colors duration-200">
+                    <button onClick={() => removePassenger(passenger.id)} className="p-2 text-red-500 hover:bg-red-100 rounded-full">
                         <Icon path="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12.54 0c-.275 0-.549.036-.82.106m12.54 0L12 3.85m0 0L8.084 3.43M12 3.85l-3.916.42M3.375 5.79c-.342.052-.682.107-1.022.166" className="w-5 h-5" />
                     </button>
                     </li>
@@ -133,80 +130,34 @@
           );
         }
 
-        // Componente para la vista de impresión
         function PrintPreview({ reservation, passengers, closePreview }) {
-            const handlePrint = () => {
-                window.print();
-            };
-
             return (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50 print:bg-white print:p-0">
                     <div id="print-content" className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-4xl relative print:shadow-none print:rounded-none">
-                        {/* Header con Logo */}
                         <div className="text-center mb-6 border-b pb-4">
-                            <img 
-                                src="logo.png" 
-                                alt="Logo Cabañas Manuara" 
-                                className="h-24 w-auto mx-auto mb-4 rounded-full"
-                                onError={(e) => { e.target.style.display='none'; }}
-                            />
+                            <img src="logo.png" alt="Logo Cabañas Manuara" className="h-24 w-auto mx-auto mb-4 rounded-full" onError={(e) => { e.target.style.display='none'; }}/>
                             <h1 className="text-2xl font-bold text-gray-800">CABAÑAS MANUARA</h1>
                             <p className="text-sm text-gray-500">CÓDIGO SERNATUR: 34494</p>
                         </div>
-
-                        {/* Reservation Details */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 mb-6">
-                            <div className="flex justify-between border-b py-2">
-                                <span className="font-semibold text-gray-700">FECHA DE ENTRADA:</span>
-                                <span className="text-gray-900">{reservation.checkIn || 'No especificada'}</span>
-                            </div>
-                            <div className="flex justify-between border-b py-2">
-                                <span className="font-semibold text-gray-700">FECHA DE SALIDA:</span>
-                                <span className="text-gray-900">{reservation.checkOut || 'No especificada'}</span>
-                            </div>
-                            <div className="flex justify-between border-b py-2">
-                                <span className="font-semibold text-gray-700">ESTADO DE LA RESERVA:</span>
-                                <span className="font-bold text-green-600">Reserva Aprobada</span>
-                            </div>
-                             <div className="flex justify-between border-b py-2">
-                                <span className="font-semibold text-gray-700">TRANSFER IN (Vuelo):</span>
-                                <span className="text-gray-900">{reservation.flightIn || 'No especificado'}</span>
-                            </div>
-                             <div className="flex justify-between border-b py-2">
-                                <span className="font-semibold text-gray-700">TRANSFER OUT (Vuelo):</span>
-                                <span className="text-gray-900">{reservation.flightOut || 'No especificado'}</span>
-                            </div>
+                            <div className="flex justify-between border-b py-2"><span className="font-semibold text-gray-700">FECHA DE ENTRADA:</span><span className="text-gray-900">{reservation.checkIn || 'No especificada'}</span></div>
+                            <div className="flex justify-between border-b py-2"><span className="font-semibold text-gray-700">FECHA DE SALIDA:</span><span className="text-gray-900">{reservation.checkOut || 'No especificada'}</span></div>
+                            <div className="flex justify-between border-b py-2"><span className="font-semibold text-gray-700">TRANSFER IN (Vuelo):</span><span className="text-gray-900">{reservation.flightIn || 'No especificado'}</span></div>
+                            <div className="flex justify-between border-b py-2"><span className="font-semibold text-gray-700">TRANSFER OUT (Vuelo):</span><span className="text-gray-900">{reservation.flightOut || 'No especificado'}</span></div>
+                            <div className="md:col-span-2 flex justify-between border-b py-2"><span className="font-semibold text-gray-700">ESTADO DE LA RESERVA:</span><span className="font-bold text-green-600">Reserva Aprobada</span></div>
                         </div>
-
-                        {/* Passengers */}
                         <h2 className="text-xl font-semibold text-gray-800 mb-4 mt-8">Pasajeros</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
-                            {passengers.length > 0 ? passengers.map(p => (
-                                <div key={p.id} className="flex justify-between border-b py-1">
-                                    <span className="text-gray-900">{p.name}</span>
-                                    <span className="text-gray-600">{p.rut}</span>
-                                </div>
-                            )) : <p className="text-gray-500 col-span-2">No hay pasajeros en esta reserva.</p>}
+                            {passengers.length > 0 ? passengers.map(p => (<div key={p.id} className="flex justify-between border-b py-1"><span className="text-gray-900">{p.name}</span><span className="text-gray-600">{p.rut}</span></div>)) : <p className="text-gray-500 col-span-2">No hay pasajeros.</p>}
                         </div>
-
-                        {/* Notes */}
                         <div className="mt-8">
                             <h2 className="text-xl font-semibold text-gray-800 mb-2">Notas:</h2>
-                            <p className="text-gray-700 whitespace-pre-wrap border p-3 rounded-md min-h-[50px]">
-                                {reservation.notes || 'Sin notas adicionales.'}
-                            </p>
+                            <p className="text-gray-700 whitespace-pre-wrap border p-3 rounded-md min-h-[50px]">{reservation.notes || 'Sin notas adicionales.'}</p>
                         </div>
-                        
-                        {/* Footer */}
-                        <div className="text-center mt-10 pt-4 border-t">
-                            <p className="font-bold text-lg text-gray-800">IORANA MAURURU</p>
-                            <p className="text-sm text-gray-500">MAHATU MANUTOMATOMA</p>
-                        </div>
-
-                        {/* Action Buttons */}
+                        <div className="text-center mt-10 pt-4 border-t"><p className="font-bold text-lg text-gray-800">IORANA MAURURU</p><p className="text-sm text-gray-500">MAHATU MANUTOMATOMA</p></div>
                         <div className="mt-8 flex justify-end gap-4 print:hidden">
-                            <button onClick={closePreview} className="px-4 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition-colors">Cerrar</button>
-                            <button onClick={handlePrint} className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
+                            <button onClick={closePreview} className="px-4 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400">Cerrar</button>
+                            <button onClick={() => window.print()} className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 flex items-center gap-2">
                                 <Icon path="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231a1.125 1.125 0 01-1.12-1.227L6.34 18m11.32 0zM9 11.625a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" className="w-5 h-5"/>
                                 Imprimir / Guardar PDF
                             </button>
@@ -216,11 +167,12 @@
             );
         }
 
-        // Componente principal de la aplicación
+        // --- COMPONENTE PRINCIPAL ---
         function App() {
           const [reservation, setReservation] = useState({ checkIn: '', checkOut: '', flightIn: '', flightOut: '', notes: '' });
           const [passengers, setPassengers] = useState([]);
           const [showPreview, setShowPreview] = useState(false);
+          const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
           useEffect(() => {
             try {
@@ -246,11 +198,10 @@
           const addPassenger = (passenger) => setPassengers([...passengers, passenger]);
           const removePassenger = (id) => setPassengers(passengers.filter(p => p.id !== id));
           
-          const clearAllData = () => {
-            if (window.confirm('¿Estás seguro de que quieres borrar todos los datos?')) {
-                setReservation({ checkIn: '', checkOut: '', flightIn: '', flightOut: '', notes: '' });
-                setPassengers([]);
-            }
+          const handleClearData = () => {
+            setReservation({ checkIn: '', checkOut: '', flightIn: '', flightOut: '', notes: '' });
+            setPassengers([]);
+            setIsConfirmOpen(false);
           };
 
           return (
@@ -261,9 +212,9 @@
                         <Icon path="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" className="w-8 h-8 text-blue-600"/>
                         <h1 className="text-2xl font-bold text-gray-800">Gestor de Reservas</h1>
                     </div>
-                    <button onClick={clearAllData} className="flex items-center gap-2 px-3 py-2 bg-red-500 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-red-600">
+                    <button onClick={() => setIsConfirmOpen(true)} className="flex items-center gap-2 px-3 py-2 bg-red-500 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-red-600">
                         <Icon path="M12 9.75L14.25 12m0 0l2.25 2.25M14.25 12L12 14.25m-2.25-2.25L7.5 12m0 0l2.25 2.25M7.5 12l2.25-2.25M3 12h18" className="w-5 h-5"/>
-                        Limpiar
+                        Limpiar Formulario
                     </button>
                 </div>
               </header>
@@ -273,7 +224,7 @@
                   <div className="space-y-6">
                     <div className="p-4 bg-white rounded-lg shadow-md border">
                         <h3 className="text-lg font-semibold text-gray-700 mb-4">Detalles de la Reserva</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6">
                             <div>
                                 <label className="block text-sm font-medium text-gray-600 mb-1">Fecha Entrada</label>
                                 <input type="date" name="checkIn" value={reservation.checkIn} onChange={handleReservationChange} className="w-full px-3 py-2 border border-gray-300 rounded-md"/>
@@ -282,14 +233,24 @@
                                 <label className="block text-sm font-medium text-gray-600 mb-1">Fecha Salida</label>
                                 <input type="date" name="checkOut" value={reservation.checkOut} onChange={handleReservationChange} className="w-full px-3 py-2 border border-gray-300 rounded-md"/>
                             </div>
+                            
+                            {/* --- CAMBIO A RADIO BUTTONS --- */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">Vuelo (Entrada)</label>
-                                <input type="text" name="flightIn" placeholder="Ej: LA841" value={reservation.flightIn} onChange={handleReservationChange} className="w-full px-3 py-2 border border-gray-300 rounded-md"/>
+                                <label className="block text-sm font-medium text-gray-600 mb-2">Vuelo de Entrada (IN)</label>
+                                <div className="flex items-center space-x-6">
+                                    <div className="flex items-center"><input id="in_la841" name="flightIn" type="radio" value="LA841" checked={reservation.flightIn === 'LA841'} onChange={handleReservationChange} className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" /><label htmlFor="in_la841" className="ml-2 block text-sm text-gray-900">LA841</label></div>
+                                    <div className="flex items-center"><input id="in_la843" name="flightIn" type="radio" value="LA843" checked={reservation.flightIn === 'LA843'} onChange={handleReservationChange} className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" /><label htmlFor="in_la843" className="ml-2 block text-sm text-gray-900">LA843</label></div>
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">Vuelo (Salida)</label>
-                                <input type="text" name="flightOut" placeholder="Ej: LA842" value={reservation.flightOut} onChange={handleReservationChange} className="w-full px-3 py-2 border border-gray-300 rounded-md"/>
+                             <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-2">Vuelo de Salida (OUT)</label>
+                                <div className="flex items-center space-x-6">
+                                    <div className="flex items-center"><input id="out_la842" name="flightOut" type="radio" value="LA842" checked={reservation.flightOut === 'LA842'} onChange={handleReservationChange} className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" /><label htmlFor="out_la842" className="ml-2 block text-sm text-gray-900">LA842</label></div>
+                                    <div className="flex items-center"><input id="out_la844" name="flightOut" type="radio" value="LA844" checked={reservation.flightOut === 'LA844'} onChange={handleReservationChange} className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" /><label htmlFor="out_la844" className="ml-2 block text-sm text-gray-900">LA844</label></div>
+                                </div>
                             </div>
+                            {/* --- FIN CAMBIO --- */}
+
                             <div className="sm:col-span-2">
                                 <label className="block text-sm font-medium text-gray-600 mb-1">Notas</label>
                                 <textarea name="notes" value={reservation.notes} onChange={handleReservationChange} rows="3" className="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Info relevante..."></textarea>
@@ -303,7 +264,7 @@
                     <div className="p-4 bg-white rounded-lg shadow-md border">
                         <h3 className="text-lg font-semibold text-gray-700 mb-2">Generar Confirmación</h3>
                         <p className="text-sm text-gray-600 mb-4">Crea un documento con los datos actuales.</p>
-                        <button onClick={() => setShowPreview(true)} className="w-full flex justify-center items-center gap-2 px-4 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700" disabled={passengers.length === 0}>
+                        <button onClick={() => setShowPreview(true)} className="w-full flex justify-center items-center gap-2 px-4 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled={passengers.length === 0}>
                             <Icon path="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                             Generar Documento
                         </button>
@@ -314,6 +275,15 @@
               </main>
 
               {showPreview && <PrintPreview reservation={reservation} passengers={passengers} closePreview={() => setShowPreview(false)} />}
+              <ConfirmModal 
+                isOpen={isConfirmOpen} 
+                onClose={() => setIsConfirmOpen(false)} 
+                onConfirm={handleClearData}
+                title="Confirmar Acción"
+              >
+                ¿Estás seguro de que quieres borrar todos los datos del formulario? Esta acción no se puede deshacer.
+              </ConfirmModal>
+
             </div>
           );
         }
@@ -323,13 +293,7 @@
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/service-worker.js')
-              .then(registration => {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-              })
-              .catch(err => {
-                console.log('ServiceWorker registration failed: ', err);
-              });
+            navigator.serviceWorker.register('/service-worker.js').catch(err => console.log('ServiceWorker registration failed: ', err));
           });
         }
     </script>
