@@ -146,10 +146,19 @@
                             <div className="flex justify-between border-b py-2"><span className="font-semibold text-gray-700">TRANSFER OUT (Vuelo):</span><span className="text-gray-900">{reservation.flightOut || 'No especificado'}</span></div>
                             <div className="md:col-span-2 flex justify-between border-b py-2"><span className="font-semibold text-gray-700">ESTADO DE LA RESERVA:</span><span className="font-bold text-green-600">Reserva Aprobada</span></div>
                         </div>
+                        
+                        {/* --- CAMBIO A LISTA VERTICAL --- */}
                         <h2 className="text-xl font-semibold text-gray-800 mb-4 mt-8">Pasajeros</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
-                            {passengers.length > 0 ? passengers.map(p => (<div key={p.id} className="flex justify-between border-b py-1"><span className="text-gray-900">{p.name}</span><span className="text-gray-600">{p.rut}</span></div>)) : <p className="text-gray-500 col-span-2">No hay pasajeros.</p>}
+                        <div className="space-y-2">
+                            {passengers.length > 0 ? passengers.map(p => (
+                                <div key={p.id} className="flex justify-between items-center border-b py-2 px-2">
+                                    <span className="text-gray-900">{p.name}</span>
+                                    <span className="text-gray-600 font-mono">{p.rut}</span>
+                                </div>
+                            )) : <p className="text-gray-500">No hay pasajeros en esta reserva.</p>}
                         </div>
+                        {/* --- FIN CAMBIO --- */}
+
                         <div className="mt-8">
                             <h2 className="text-xl font-semibold text-gray-800 mb-2">Notas:</h2>
                             <p className="text-gray-700 whitespace-pre-wrap border p-3 rounded-md min-h-[50px]">{reservation.notes || 'Sin notas adicionales.'}</p>
@@ -234,7 +243,6 @@
                                 <input type="date" name="checkOut" value={reservation.checkOut} onChange={handleReservationChange} className="w-full px-3 py-2 border border-gray-300 rounded-md"/>
                             </div>
                             
-                            {/* --- CAMBIO A RADIO BUTTONS --- */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-600 mb-2">Vuelo de Entrada (IN)</label>
                                 <div className="flex items-center space-x-6">
@@ -249,7 +257,6 @@
                                     <div className="flex items-center"><input id="out_la844" name="flightOut" type="radio" value="LA844" checked={reservation.flightOut === 'LA844'} onChange={handleReservationChange} className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" /><label htmlFor="out_la844" className="ml-2 block text-sm text-gray-900">LA844</label></div>
                                 </div>
                             </div>
-                            {/* --- FIN CAMBIO --- */}
 
                             <div className="sm:col-span-2">
                                 <label className="block text-sm font-medium text-gray-600 mb-1">Notas</label>
